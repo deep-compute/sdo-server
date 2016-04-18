@@ -14,4 +14,4 @@ pip install -r requirements.txt
 python sdoserver.py --log-level info --port <PORT> <RDFDIR1> <RDFDIR2>
 ```
 
-[1]: github.com/deep-compute/funcserver.git
+[1]: https://github.com/deep-compute/funcserver.git
