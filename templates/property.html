@@ -20,9 +20,9 @@
 {% set predicate_objects = set(api.get_predicate_object_for_subject(subject)) %}
 {% set domain_po = set([ (p,o) for p,o in predicate_objects if api.is_predicate_domain_includes(p) ]) %}
 {% set range_po = set([ (p,o) for p,o in predicate_objects if api.is_predicate_range_includes(p) ]) %}
-{% set other_po = (predicate_objects - domain_po - range_po) %}
-{% set range_po = [ o for p,o in range_po ] %}
-{% set domain_po = [ o for p,o in domain_po ] %}
+{% set other_po = sorted((predicate_objects - domain_po - range_po)) %}
+{% set range_po = sorted([ o for p,o in range_po ]) %}
+{% set domain_po = sorted([ o for p,o in domain_po ]) %}
 
 <!-- predicate object table -->
 {% module Template("predicate_object_table.html", api=api, terms=other_po) %}

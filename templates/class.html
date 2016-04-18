@@ -42,7 +42,8 @@
                     <tr>
                         <th class="well" colspan="3"> Properties from {% module Template("term.html", api=api, term=ancestor) %} </th>
                     </tr>
-                    {% for property, obj_list in properties_for_class_as_domain.iteritems() %}
+                    {% for property in sorted(properties_for_class_as_domain) %}
+                        {% set obj_list = properties_for_class_as_domain[property] %}
                         <tr>
                             <td> 
                                 {% module Template("term.html", api=api, term=property) %}
@@ -80,7 +81,8 @@
             </thead>
             <tbody>
                 {% set properties_for_class_as_range = api.get_properties_for_class_as_range(subject) %}
-                {% for property, obj_list in properties_for_class_as_range.iteritems() %}
+                {% for property in sorted(properties_for_class_as_range) %}
+                    {% set obj_list = properties_for_class_as_range[property] %}
                     <tr>
                         <td>
                             {% module Template("term.html", api=api, term=property) %}
