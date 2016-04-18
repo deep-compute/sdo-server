@@ -1,0 +1,16 @@
+<!-- find a better way for this widget -->
+<!-- accepts api and a term -->
+{% if api.is_term(term) %}
+    {% set termid = api.get_id(term) %}
+    {% set termlabel = api.get_label(term) %}
+    {% if api.is_known_term(term) %}
+        <a href="{{ termid }}"> {{ termlabel }} </a>
+    {% else %}
+        <a href="{{ termid }}" target="_blank"> {{ termlabel }} </a>
+    {% end %}
+{% elif api.is_literal(term) %}
+    {% set termstr = term.toPython() %}
+    {{ termstr }}
+{% else %}
+    {{ term }}
+{% end %}

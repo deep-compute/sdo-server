@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Full Schema {% end %}
+
+{% block body %}
+<div class="col-sm-12">
+    {% set thing=api.get_term_from_str("http://schema.org/Thing") %}
+    {% module Template("recursive_schema.html", api=api, term=thing) %}
+</div>
+{% end %}
+
+{% block js %}
+{% end %}

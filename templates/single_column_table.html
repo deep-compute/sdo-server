@@ -1,0 +1,16 @@
+<!-- assumes api, colname, and values are passed to it -->
+
+<div class="row">
+    <div class="col-md-3">
+        <table class="table table-bordered">
+            <thead>
+                <tr> <th> {{ colname }} </th> </tr>
+            </thead>
+            <tbody>
+                {% for value in values %}
+                    <tr> <td> {% module Template("term.html", api=api, term=value) %} </td> </tr>
+                {% end %}
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,5 @@
+{% module Template("single_schema.html", api=api, subject=term) %}
+{% set descendants = api.get_descendants(term) %}
+{% for descendant in descendants %}
+    {% module Template("recursive_schema.html", api=api, term=descendant) %}
+{% end %}

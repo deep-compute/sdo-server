@@ -1,0 +1,23 @@
+<!-- assumes the variables api and terms are passed to it -->
+
+<div class="row">
+    <div class="col-md-5">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th class="col-md-2">Property</th>
+                    <th class="col-md-3">Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for (property, value) in terms %}
+                    <tr>
+                        <td> {% module Template("term.html", api=api, term=property) %} </td>
+                        <td> {% module Template("term.html", api=api, term=value) %} </td>
+                {% end %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
