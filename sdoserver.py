@@ -297,6 +297,7 @@ class RDFApi(object):
         WHERE {
             <%(subject_uri)s> ?predicate ?object
         }
+        ORDER BY ?predicate
         ''' % dict(subject_uri=subject.toPython())
         result = self.graph.query(query)
         return [ (row[0], row[1]) for row in self.graph.query(query) ]
