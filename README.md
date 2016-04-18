@@ -13,3 +13,5 @@ pip install -r requirements.txt
 # <RDFDIRN> is a directory where rdfs files are stored
 python sdoserver.py --log-level info --port <PORT> <RDFDIR1> <RDFDIR2>
 ```
+
+[1]: github.com/deep-compute/funcserver.git
