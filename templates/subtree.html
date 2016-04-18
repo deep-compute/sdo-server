@@ -1,0 +1,23 @@
+<div>
+    {% set tlabel = api.get_label(term) %}
+    {% set descendants = api.get_descendants(term) %}
+    {% if len(descendants) != 0 %}
+        <button type="button" class="btn btn-small" data-toggle="collapse" data-target="#{{tlabel}}">
+            <span class="glyphicon glyphicon-plus"></span>
+        </button>
+    {% end %}
+
+    {% module Template("term.html", api=api, term=term) %}
+    
+    {% if len(descendants) != 0 %}
+        <div id="{{tlabel}}" class="collapse">
+            <ul>
+                {% for descendant in descendants %}
+                    <li>
+                        {% module Template("subtree.html", api=api, term=descendant) %}
+                    </li>
+                {% end %}
+            </ul>
+        </div>
+    {% end %}
+</div>

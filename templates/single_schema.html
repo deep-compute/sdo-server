@@ -1,0 +1,11 @@
+<div class="row">
+    <div class="col-sm-12">
+        {% if api.is_property(subject) %}
+            {% module Template("property.html", api=api, subject=subject) %}
+        {% elif api.is_class(subject) %}
+            {% module Template("class.html", api=api, subject=subject) %}
+        {% else %}
+            <p> I have no idea what it is ... </p>
+        {% end %}
+    </div>
+</div>

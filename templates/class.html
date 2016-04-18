@@ -1,0 +1,104 @@
+<!-- assumes the variables api and subject are passed to it -->
+<!-- subject is a class ! -->
+
+{% set subject_label = api.get_label(subject) %}
+{% set subject_desc = api.get_desc(subject) %}
+
+<h2> {{ subject_label }} </h2>
+<br/>
+{% set ancestors = api.get_ancestors(subject) %}
+
+<!-- rendering the ancestors like Thing > Organization > Corporation -->
+{% module Template("ancestor_hierarchy.html", api=api, ancestors=ancestors) %}
+
+<br/>
+
+<p> {{ subject_desc }} </p>
+
+<br/>
+
+<!-- predicate object table -->
+{% set term_predicate_objects = api.get_predicate_object_for_subject(subject) %}
+{% module Template("predicate_object_table.html", api=api, terms=term_predicate_objects) %}
+
+<!-- properties for which this appears as domainIncludes -->
+<div class="row">
+    <div class="col-md-10">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th class="col-md-1">Property</th>
+                    <th class="col-md-1">Expected Type</th>
+                    <th class="col-md-8">Description</th>
+                </tr>
+            </thead>
+            {% for ancestor in ancestors %}
+                <tbody>
+                    {% set properties_for_class_as_domain = api.get_properties_for_class_as_domain(ancestor) %}
+                    {% if len(properties_for_class_as_domain) == 0 %}
+                        {% continue %}
+                    {% end %}
+
+                    <tr>
+                        <th class="well" colspan="3"> Properties from {% module Template("term.html", api=api, term=ancestor) %} </th>
+                    </tr>
+                    {% for property, obj_list in properties_for_class_as_domain.iteritems() %}
+                        <tr>
+                            <td> 
+                                {% module Template("term.html", api=api, term=property) %}
+                            </td>
+                            <!-- obj_list is a list that we need to make a or b or c -->
+                            <td>
+                                {% for obj in obj_list[:-1] %}
+                                    {% module Template("term.html", api=api, term=obj) %} or <br/>
+                                {% end %}
+                                {% module Template("term.html", api=api, term=obj_list[-1]) %}
+                            </td>
+                            <!-- property description -->
+                            <td>
+                                {% set property_desc = api.get_desc(property) %}
+                                {{ property_desc }}
+                            </td>
+                        </tr>
+                    {% end %}
+                </tbody>
+            {% end %}
+        </table>
+    </div>
+</div>
+
+<!-- properties for which this appears as rangeIncludes -->
+<div class="row">
+    <div class="col-md-10">
+        <p> Instances of {{ subject_label }} may appear as values for the following properties: </p>
+
+        <table class="table table-bordered" border="1">
+            <thead>
+                <th class="col-md-1">Property</th>
+                <th class="col-md-1">On Types</th>
+                <th class="col-md-8">Description</th>
+            </thead>
+            <tbody>
+                {% set properties_for_class_as_range = api.get_properties_for_class_as_range(subject) %}
+                {% for property, obj_list in properties_for_class_as_range.iteritems() %}
+                    <tr>
+                        <td>
+                            {% module Template("term.html", api=api, term=property) %}
+                        </td>
+                        <!-- obj_list is a list that we need to make a or b or c -->
+                        <td>
+                            {% for obj in obj_list[:-1] %}
+                                {% module Template("term.html", api=api, term=obj) %} or <br/>
+                            {% end %}
+                            {% module Template("term.html", api=api, term=obj_list[-1]) %}
+                        </td>
+                        <!-- property description -->
+                        <td>
+                            {% set property_desc = api.get_desc(property) %}
+                            {{ property_desc }}
+                        </td>
+                {% end %}
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %} Schema {% end %}
+<!-- I cannot set schema before this and put it there... doesnt work :/ -->
+
+{% block body %}
+{% set subject = request.uri %}
+{% if subject.startswith('/schema/') %}
+    {% set subject = subject[len('/schema/'):] %}
+{% end %}
+{% set subject = 'http://%s' % subject %}
+
+<div class="col-sm-12">
+    {% module Template("single_schema.html", api=api, subject=subject) %}
+</div>
+
+{% end %}
+
+{% block js %}
+{% end %}

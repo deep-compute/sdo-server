@@ -1,0 +1,36 @@
+<!-- assumes the variables api and subject are passed to it -->
+<!-- subject is a property ! -->
+
+{% set subject_label = api.get_label(subject) %}
+{% set subject_desc = api.get_desc(subject) %}
+
+<h2> {{ subject_label }} </h2>
+<br/>
+{% set ancestors = api.get_ancestors(subject) %}
+
+<!-- rendering the ancestors for this property -->
+{% module Template("ancestor_hierarchy.html", api=api, ancestors=ancestors) %}
+
+<br/>
+
+<p> {{ subject_desc }} </p>
+
+<br/>
+
+{% set predicate_objects = set(api.get_predicate_object_for_subject(subject)) %}
+{% set domain_po = set([ (p,o) for p,o in predicate_objects if api.is_predicate_domain_includes(p) ]) %}
+{% set range_po = set([ (p,o) for p,o in predicate_objects if api.is_predicate_range_includes(p) ]) %}
+{% set other_po = (predicate_objects - domain_po - range_po) %}
+{% set range_po = [ o for p,o in range_po ] %}
+{% set domain_po = [ o for p,o in domain_po ] %}
+
+<!-- predicate object table -->
+{% module Template("predicate_object_table.html", api=api, terms=other_po) %}
+
+<!-- range table -->
+{% set colname="Values expected to be one of these types" %}
+{% module Template("single_column_table.html", api=api, colname=colname, values=range_po) %}
+
+<!-- domain table -->
+{% set colname="Used on these types" %}
+{% module Template("single_column_table.html", api=api, colname=colname, values=domain_po) %}
