@@ -10,6 +10,7 @@ import glob
 import rdflib
 import unittest
 from StringIO import StringIO
+import tornado.web
 from rdflib.plugins.sparql import prepareQuery
 from funcserver import Server, make_handler, BaseHandler
 
@@ -179,7 +180,7 @@ class RDFApi(object):
         self.properties = set([row[0] for row in result])
 
         result = self.execute_prepared_query("get_term_to_label")
-        self.term_to_label = { row[0]: row[1].toPython() for row in result }
+        self.term_to_label = { row[0]: row[1].toPython().strip() for row in result }
 
         result = self.execute_prepared_query("get_term_to_desc")
         self.term_to_desc = { row[0]: row[1].toPython() for row in result }
@@ -357,12 +358,19 @@ class SdoServer(Server):
         return nav_tabs
 
     def prepare_handlers(self):
-        return [
+        handlers = []
+        context_dir = self.args.context_dir
+        if context_dir is not None:
+            handlers.append(
+                (r'/schema/context/(.*)', tornado.web.StaticFileHandler, {'path': context_dir }),
+            )
+
+        handlers.extend([
             (r'/schema/tree', make_handler('tree_schema_tab.html', BaseHandler)),
             (r'/schema/full', make_handler('full_schema_tab.html', BaseHandler)),
-            # (r'/schema/(\w+)', make_handler('indivdual.html', BaseHandler)),
             (r'/schema/.*', make_handler('single_schema_tab.html', BaseHandler)),
-        ]
+        ])
+        return handlers
 
     def prepare_template_loader(self, loader):
         loader.add_dir('./templates')
@@ -370,6 +378,7 @@ class SdoServer(Server):
 
     def define_args(self, parser):
         parser.add_argument("rdf_dirs", nargs="+", help="Directory containing rdf files")
+        parser.add_argument("--context-dir", default=None, help="Directory to store context files")
         parser.add_argument("--skip-tests", default=False, action="store_true",
             help="skips initial test check when starting server...",
         )
