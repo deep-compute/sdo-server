@@ -14,7 +14,9 @@ pip install git+git://github.com/deep-compute/basescript.git
 pip install git+git://github.com/deep-compute/funcserver.git
 pip install -r requirements.txt
 # <RDFDIRN> is a directory where rdfs files are stored
-python sdoserver.py --log-level info --port <PORT> <RDFDIR1> <RDFDIR2>
+# If context files are required for json ld, pass the dir where they are
+# access them via /schema/context/<context_file>
+python sdoserver.py --log-level info --port <PORT> <RDFDIR1> <RDFDIR2> [ --context-dir <CONTEXT_DIR> ]
 ```
 
 ## Misc notes
