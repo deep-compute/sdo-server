@@ -4,7 +4,7 @@
 {% for ancestor in ancestors[::-1][:-1] %}
     {% set ancestor_id = api.get_id(ancestor) %}
     {% set ancestor_label = api.get_label(ancestor) %}
-    <a href="{{ancestor_id}}">{{ancestor_label}}</a> &gt
+    <a href="{{ancestor_id}}">{{ancestor_label}}</a> &gt;
 {% end %}
 {% set ancestor_id = api.get_id(ancestors[0]) %}
 {% set ancestor_label = api.get_label(ancestors[0]) %}

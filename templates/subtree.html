@@ -1,5 +1,8 @@
 <div>
     {% set tlabel = api.get_label(term) %}
+    {% if ':' in tlabel %}
+        {% set tlabel = tlabel.replace(':', '_') %}
+    {% end %}
     {% set descendants = api.get_descendants(term) %}
     {% if len(descendants) != 0 %}
         <button type="button" class="btn btn-small" data-toggle="collapse" data-target="#{{tlabel}}">
@@ -12,7 +15,7 @@
     {% if len(descendants) != 0 %}
         <div id="{{tlabel}}" class="collapse">
             <ul>
-                {% for descendant in descendants %}
+                {% for descendant in sorted(descendants) %}
                     <li>
                         {% module Template("subtree.html", api=api, term=descendant) %}
                     </li>

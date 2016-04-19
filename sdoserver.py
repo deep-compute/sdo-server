@@ -180,7 +180,7 @@ class RDFApi(object):
         self.properties = set([row[0] for row in result])
 
         result = self.execute_prepared_query("get_term_to_label")
-        self.term_to_label = { row[0]: row[1].toPython() for row in result }
+        self.term_to_label = { row[0]: row[1].toPython().strip() for row in result }
 
         result = self.execute_prepared_query("get_term_to_desc")
         self.term_to_desc = { row[0]: row[1].toPython() for row in result }
