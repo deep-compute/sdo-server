@@ -8,11 +8,14 @@ monkey.patch_all = lambda : None # try old_patchall(socket=False, threading=Fals
 import os
 import glob
 import rdflib
+import shutil
 import unittest
 from StringIO import StringIO
 import tornado.web
 from rdflib.plugins.sparql import prepareQuery
 from funcserver import Server, make_handler, BaseHandler
+
+from search import RDFSearch
 
 make_term = lambda x: rdflib.term.URIRef(x) if isinstance(x, basestring) else x
 
@@ -116,6 +119,14 @@ class RDFApi(object):
         order by count(?mid)
         '''
         self.add_prepared_query("get_ancestors", get_ancestors, initNs)
+
+    def prepare_search_index(self, index_dir):
+        self.log.info("preparing search index...")
+        self.rdf_searcher = RDFSearch(index_dir, self.graph)
+
+    def search(self, term):
+        self.log.debug("searching for %s", term)
+        return map(make_term, self.rdf_searcher.search(term))
 
     def get_desc(self, term):
         term = make_term(term)
@@ -347,12 +358,18 @@ class SdoServer(Server):
             api.add_file(f)
 
         api.reload_term_meta()
+        if self.args.force_index and os.path.exists(self.args.index_dir):
+            self.log.info("removing %s as --force-index=True", self.args.index_dir)
+            shutil.rmtree(self.args.index_dir)
+
+        api.prepare_search_index(self.args.index_dir)
         self.log.info("api is ready to be used...")
         return api
 
     def prepare_nav_tabs(self, nav_tabs):
         nav_tabs.append(('TreeSchema', '/schema/tree'))
         nav_tabs.append(('FullSchema', '/schema/full'))
+        nav_tabs.append(('Search', '/schema/search'))
         nav_tabs.append(('Schema', '/schema/schema.org/Thing'))
 
         return nav_tabs
@@ -368,6 +385,7 @@ class SdoServer(Server):
         handlers.extend([
             (r'/schema/tree', make_handler('tree_schema_tab.html', BaseHandler)),
             (r'/schema/full', make_handler('full_schema_tab.html', BaseHandler)),
+            (r'/schema/search', make_handler('search_tab.html', BaseHandler)),
             (r'/schema/.*', make_handler('single_schema_tab.html', BaseHandler)),
         ])
         return handlers
@@ -381,6 +399,13 @@ class SdoServer(Server):
         parser.add_argument("--context-dir", default=None, help="Directory to store context files")
         parser.add_argument("--skip-tests", default=False, action="store_true",
             help="skips initial test check when starting server...",
+        )
+        default_index_dir = '/var/lib/sdoserver/index'
+        parser.add_argument("--index-dir", default=default_index_dir,
+            help="creates the search index at the given location default %(default)s",
+        )
+        parser.add_argument("--force-index", default=False, action="store_true",
+            help="this will clear the old index and force new computation of index",
         )
 
 if __name__ == '__main__':
