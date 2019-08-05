@@ -17,8 +17,9 @@ from sdoserver import RDFApi
 logging.basicConfig(stream=sys.stderr)
 log = logging.getLogger()
 warnings = []
-class GraphConsistenctyTestCase(unittest.TestCase):
 
+
+class GraphConsistenctyTestCase(unittest.TestCase):
     def setUp(self):
         self.api = RDFApi(log)
         self.rdf_dir = os.getenv("RDF_DIR")
@@ -31,18 +32,24 @@ class GraphConsistenctyTestCase(unittest.TestCase):
         filelist = []
         for rdf_dir in rdf_dirs:
             for ext in RDFApi.EXT_TO_FORMAT.iterkeys():
-                files = glob.glob(os.path.join(rdf_dir, '*%s' % ext))
+                files = glob.glob(os.path.join(rdf_dir, "*%s" % ext))
                 filelist.extend(files)
 
         for f in filelist:
             self.api.add_file(f)
 
     def test_even_number_inverseOf(self):
-        inverseOf_results = self.api.graph.query("""
+        inverseOf_results = self.api.graph.query(
+            """
             SELECT ?x ?y WHERE { ?x <http://schema.org/inverseOf> ?y }
-        """)
-        self.assertEqual(len(inverseOf_results) % 2 == 0, True,
-            "Even number of inverseOf triples expected. Found: %s" % len(inverseOf_results))
+        """
+        )
+        self.assertEqual(
+            len(inverseOf_results) % 2 == 0,
+            True,
+            "Even number of inverseOf triples expected. Found: %s"
+            % len(inverseOf_results),
+        )
 
     # @unittest.expectedFailure # autos
     def test_needless_domainIncludes(self):
@@ -65,14 +72,17 @@ class GraphConsistenctyTestCase(unittest.TestCase):
         result = self.api.graph.query(query)
         fmt = "property {prop} defining domain, {c1}, [which is subclassOf] {c2} unnecessarily."
 
-        if len(result) > 0 :
+        if len(result) > 0:
             for row in result:
                 warn = fmt.format(prop=row[0], c1=row[1], c2=row[2])
                 warnings.append(warn)
                 log.warn(warn)
 
-        self.assertEqual(len(result), 0,
-            "No subtype need redeclare a domainIncludes of its parents. Found: %s " % len(result),
+        self.assertEqual(
+            len(result),
+            0,
+            "No subtype need redeclare a domainIncludes of its parents. Found: %s "
+            % len(result),
         )
 
     # @unittest.expectedFailure
@@ -97,14 +107,17 @@ class GraphConsistenctyTestCase(unittest.TestCase):
         result = self.api.graph.query(query)
         fmt = "property {prop} defining range, {c1}, [which is subclassOf] {c2} unnecessarily."
 
-        if len(result) > 0 :
+        if len(result) > 0:
             for row in result:
                 warn = fmt.format(prop=row[0], c1=row[1], c2=row[2])
                 warnings.append(warn)
                 log.warn(warn)
 
-        self.assertEqual(len(result), 0,
-            "No subtype need redeclare a rangeIncludes of its parents. Found: %s " % len(result),
+        self.assertEqual(
+            len(result),
+            0,
+            "No subtype need redeclare a rangeIncludes of its parents. Found: %s "
+            % len(result),
         )
 
     def test_valid_rangeIncludes(self):
@@ -125,9 +138,13 @@ class GraphConsistenctyTestCase(unittest.TestCase):
 
         result = self.api.graph.query(query)
         for row in result:
-            log.warn("Property %s invalid rangeIncludes value: %s", row["prop"], row["c1"])
+            log.warn(
+                "Property %s invalid rangeIncludes value: %s", row["prop"], row["c1"]
+            )
 
-        self.assertEqual(len(result), 0,
+        self.assertEqual(
+            len(result),
+            0,
             "RangeIncludes should define valid type. Found: %s" % len(result),
         )
 
@@ -149,11 +166,16 @@ class GraphConsistenctyTestCase(unittest.TestCase):
 
         result = self.api.graph.query(query)
         for row in result:
-            log.warn("Property %s invalid domainIncludes value: %s", row["prop"], row["c1"])
+            log.warn(
+                "Property %s invalid domainIncludes value: %s", row["prop"], row["c1"]
+            )
 
-        self.assertEqual(len(result), 0,
+        self.assertEqual(
+            len(result),
+            0,
             "DomainIncludes should define valid type. Found %s" % len(result),
         )
+
 
 def tearDownModule():
     global warnings
@@ -171,5 +193,5 @@ def tearDownModule():
 # * need a few supporting functions e.g. all terms, all types, all properties, all enum values; candidates for api later but just use here first.
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
