@@ -2,7 +2,7 @@ backports-abc==0.4
 backports.ssl-match-hostname==3.5.0.1
 basescript==0.3.1
 certifi==2016.2.28
-funcserver==0.2.18
+funcserver==0.2.17
 gevent==1.1.1
 greenlet==0.4.9
 html5lib==0.9999999
